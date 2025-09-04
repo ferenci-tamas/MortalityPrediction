@@ -4,9 +4,9 @@ calculations
 Tamás Ferenci[^1]
 
 The study is available in [PDF
-format](https://raw.githubusercontent.com/tamas-ferenci/MortalityPrediction/main/README.pdf).
-Preprint is uploaded to
-[medRxiv](https://www.medrxiv.org/content/10.1101/2022.07.18.22277746).
+format](https://raw.githubusercontent.com/ferenci-tamas/MortalityPrediction/main/README.pdf).
+Paper is available at
+<https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-023-02061-w>.
 
 ## Abstract
 
@@ -169,13 +169,14 @@ predgrid <- rbind(cbind(predgrid, Type = "Spline", predSpline),
 ggplot(predgrid, aes(x = Year, y = exp(fit),  color = Type, fill = Type)) +
   geom_line() + geom_point(data = RawDataYearly[Year>=2015&Year<=2019,],
                            aes(x = Year, y = (outcome/52.25)), inherit.aes = FALSE) +
-  labs(y = "Predicted mortality [/week]")
+  labs(y = "Predicted mortality [/week]") + theme(text = element_text(size = 18))
 ```
 
 <div class="figure">
 
 <img src="README_files/figure-gfm/germanpuzzle-1.png" alt="A linear trend and a spline fitted on the 2015--2019 German mortality data and extrapolated to 2020 and 2021."  />
 <p class="caption">
+
 <span id="fig:germanpuzzle"></span>Figure 1: A linear trend and a spline
 fitted on the 2015–2019 German mortality data and extrapolated to 2020
 and 2021.
@@ -251,12 +252,13 @@ pattern).
 
 ``` r
 p1 <- ggplot(RawData[Year<=2019], aes(x = date, y = outcome)) + geom_line() +
-  labs(x = "Week/year", y = "Mortality [/week]")
+  labs(x = "Week/year", y = "Mortality [/week]") + theme(text = element_text(size = 18))
 p2 <- ggplot(RawDataYearly[Year<=2019], aes(x = Year, y = outcome)) + geom_point() +
   geom_line() + geom_smooth(formula = y ~ x, method = "loess", se = FALSE) +
-  labs(x = "Year", y = "Mortality [/year]")
+  labs(x = "Year", y = "Mortality [/year]") + theme(text = element_text(size = 18))
 p3 <- ggplot(RawData[Year<=2019], aes(x = Week, y = outcome, group = Year)) +
-  geom_line(alpha = 0.2) + labs(x = "Week of year", y = "Mortality [/week]")
+  geom_line(alpha = 0.2) + labs(x = "Week of year", y = "Mortality [/week]") +
+  theme(text = element_text(size = 18))
 
 egg::ggarrange(p1, p2, p3, ncol = 1)
 ```
@@ -265,6 +267,7 @@ egg::ggarrange(p1, p2, p3, ncol = 1)
 
 <img src="README_files/figure-gfm/german-raw-plots-1.png" alt="Weekly mortalities (upper), yearly mortalities with the LOESS-smoother (middle), and the seasonal pattern (bottom) for the German mortality data, 2000--2019."  />
 <p class="caption">
+
 <span id="fig:german-raw-plots"></span>Figure 2: Weekly mortalities
 (upper), yearly mortalities with the LOESS-smoother (middle), and the
 seasonal pattern (bottom) for the German mortality data, 2000–2019.
@@ -378,11 +381,11 @@ modelling approaches.
 
 Table 1. Overview of the models used to create predictions.
 
-| **Name**        | **Model**                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-|-----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Average         | $Y_t \sim NegBin\left(\mu_t, \theta\right)$<br>$\log\left(\mu_t\right) = \beta_0 + f_{cc}\left(w\left[t\right]\right)$                                                                                                                                                                                                                                                                                                                      |
-| Linear          | $Y_t \sim NegBin\left(\mu_t, \theta\right)$<br>$\log\left(\mu_t\right) = \beta_0 + \beta_1 t + f_{cc}\left(w\left[t\right]\right)$                                                                                                                                                                                                                                                                                                          |
-| WHO             | $Y_t \sim NegBin\left(\mu_t, \theta\right)$<br>$\log\left(\mu_t\right) = f_{tp}\left(t\right) + f_{cc}\left(w\left[t\right]\right)$                                                                                                                                                                                                                                                                                                         |
+| **Name** | **Model** |
+|----|----|
+| Average | $Y_t \sim NegBin\left(\mu_t, \theta\right)$<br>$\log\left(\mu_t\right) = \beta_0 + f_{cc}\left(w\left[t\right]\right)$ |
+| Linear | $Y_t \sim NegBin\left(\mu_t, \theta\right)$<br>$\log\left(\mu_t\right) = \beta_0 + \beta_1 t + f_{cc}\left(w\left[t\right]\right)$ |
+| WHO | $Y_t \sim NegBin\left(\mu_t, \theta\right)$<br>$\log\left(\mu_t\right) = f_{tp}\left(t\right) + f_{cc}\left(w\left[t\right]\right)$ |
 | Acosta-Irizarry | $Y_t \sim QuasiPoi\left(\mu_t\right)$<br>$\log\left(\mu_t\right) = \begin{cases} \beta_0 + f_{nc}\left(t\right) + \sum_{k=1}^2 \left[\sin\left(2\pi\cdot k \cdot w\left[t\right]\right) + \cos\left(2\pi\cdot k \cdot w\left[t\right]\right)\right] \quad * \\ \beta_0 +\beta_1 t + \sum_{k=1}^2 \left[\sin\left(2\pi\cdot k \cdot w\left[t\right]\right) + \cos\left(2\pi\cdot k \cdot w\left[t\right]\right)\right] \quad ** \end{cases}$ |
 
 Legend. cc: cyclic cubic regression spline, tp: thin plate regression
@@ -449,14 +452,14 @@ Additional File 3 details the simulation.
 ### Programs used
 
 All calculations were performed using the R statistical program package
-version 4.3.1 \[40\] with the packages `data.table` \[41\] (version
-1.14.8), `ggplot2` \[42\] (version 3.4.3), `excessmort` (version 0.6.1),
-`mgcv` (version 1.8.42), `scorepeak` (version 0.1.2), `parallel`
-(version 4.3.1) `lubridate` (version 1.9.3), `ISOweek` (version 0.6.2)
-and `eurostat` (version 3.8.2).
+version 4.5.1 \[40\] with the packages `data.table` \[41\] (version
+1.17.8), `ggplot2` \[42\] (version 3.5.2), `excessmort` (version 0.8.1),
+`mgcv` (version 1.9.3), `scorepeak` (version 0.1.2), `parallel` (version
+4.5.1) `lubridate` (version 1.9.4), `ISOweek` (version 0.6.2) and
+`eurostat` (version 4.0.0).
 
 The full source code allowing for complete reproducibility is openly
-available at: <https://github.com/tamas-ferenci/MortalityPrediction>.
+available at: <https://github.com/ferenci-tamas/MortalityPrediction>.
 
 ## Results
 
@@ -466,37 +469,45 @@ for the base case scenario by showing the estimated yearly deaths for
 four methods with all possible parameters.
 
 ``` r
-p1 <- ggplot() + xlim(c(2018, 2023)) + #ylim(c(0.5, 1.5)) +
+p1 <- ggplot() + #xlim(c(2018, 2023)) + #ylim(c(0.5, 1.5)) +
   geom_line(data = predLongs$WHO[rep<=200&parsim==1],
             aes(x = Year, y = value/1e6, group = rep), alpha = 0.1) + 
   geom_line(data = predLongs$WHO[parsim==1, .(outcome = mean(outcome)), .(Year)],
             aes(x = Year, y = outcome/1e6), color = "red") +
   facet_grid(rows = vars(k), cols = vars(startyear), scales = "free") +
-  labs(y = "Outcome [million death / year]", title = "A) WHO's method")
+  labs(y = "Outcome [million death / year]", title = "A) WHO's method") +
+  theme(text = element_text(size = 18)) +
+  scale_x_continuous(guide = guide_axis(angle = 45), limits = c(2018, 2023))
 
-p2 <- ggplot() + xlim(c(2018, 2023)) + #ylim(c(0.5, 1.5)) +
+p2 <- ggplot() + #xlim(c(2018, 2023)) + #ylim(c(0.5, 1.5)) +
   geom_line(data = predLongs$AI[rep<=200&parsim==1],
             aes(x = Year, y = value/1e6, group = rep), alpha = 0.1) + 
   geom_line(data = predLongs$AI[parsim==1, .(outcome = mean(outcome)), .(Year)],
             aes(x = Year, y = outcome/1e6), color = "red") +
   facet_grid(rows = vars(tkpy), cols = vars(startyear), scales = "free") +
-  labs(y = "Outcome [million death / year]", title = "B) Acosta-Irizarry method")
+  labs(y = "Outcome [million death / year]", title = "B) Acosta-Irizarry method") +
+  theme(text = element_text(size = 18)) +
+  scale_x_continuous(guide = guide_axis(angle = 45), limits = c(2018, 2023))
 
-p3 <- ggplot() + xlim(c(2018, 2023)) + #ylim(c(0.5, 1.5)) +
+p3 <- ggplot() + #xlim(c(2018, 2023)) + #ylim(c(0.5, 1.5)) +
   geom_line(data = predLongs$Lin[rep<=200&parsim==1],
             aes(x = Year, y = value/1e6, group = rep), alpha = 0.1) + 
   geom_line(data = predLongs$Lin[parsim==1, .(outcome = mean(outcome)), .(Year)],
             aes(x = Year, y = outcome/1e6), color = "red") +
   facet_grid(cols = vars(startyear), scales = "free") +
-  labs(y = "Outcome [million death / year]", title = "C) Linear trend")
+  labs(y = "Outcome\n[million death / year]", title = "C) Linear trend") +
+  theme(text = element_text(size = 18)) +
+  scale_x_continuous(guide = guide_axis(angle = 45), limits = c(2018, 2023))
 
-p4 <- ggplot() + xlim(c(2018, 2023)) + #ylim(c(0.5, 1.5)) +
+p4 <- ggplot() + #xlim(c(2018, 2023)) + #ylim(c(0.5, 1.5)) +
   geom_line(data = predLongs$Average[rep<=200&parsim==1],
             aes(x = Year, y = value/1e6, group = rep), alpha = 0.1) + 
   geom_line(data = predLongs$Average[parsim==1, .(outcome = mean(outcome)), .(Year)],
             aes(x = Year, y = outcome/1e6), color = "red") +
   facet_grid(cols = vars(startyear), scales = "free") +
-  labs(y = "Outcome [million death / year]", title = "D) Average")
+  labs(y = "Outcome\n[million death / year]", title = "D) Average") +
+  theme(text = element_text(size = 18)) +
+  scale_x_continuous(guide = guide_axis(angle = 45), limits = c(2018, 2023))
 
 egg::ggarrange(p1, p2, p3, p4, ncol = 1, heights = c(1, 1, 0.4, 0.4))
 ```
@@ -505,6 +516,7 @@ egg::ggarrange(p1, p2, p3, p4, ncol = 1, heights = c(1, 1, 0.4, 0.4))
 
 <img src="README_files/figure-gfm/trajs-1.png" alt="Estimated yearly deaths (for 2020--2023) for 200 randomly selected simulations (black lines) together with the ground truth (red line). A) WHO method, B) Acosta--Irizarry method, C) Linear trend, D) Average. Parameters of the methods are shown in column and row headers, and parameters of the scenario are set to the base case values. Note that 2020 is a long year with 53 weeks; therefore, higher values are expected for that year."  />
 <p class="caption">
+
 <span id="fig:trajs"></span>Figure 3: Estimated yearly deaths (for
 2020–2023) for 200 randomly selected simulations (black lines) together
 with the ground truth (red line). A) WHO method, B) Acosta–Irizarry
@@ -536,13 +548,15 @@ pd$param <- factor(pd$param, levels = c(sort(unique(predLongs$WHO$k)), levels(pr
 ggplot(pd, aes(x = startyear, y = value, color = param)) +
   facet_grid(variable ~ factor(Type, levels = c("WHO", "AI", "Linear", "Average")), scales = "free") +
   geom_point() + geom_line() + labs(x = "Starting year", y = "", color = "Parameter") +
-  scale_color_discrete(breaks = levels(pd$param)) + guides(color = guide_legend(ncol = 2))
+  scale_color_discrete(breaks = levels(pd$param)) + guides(color = guide_legend(ncol = 2)) +
+  theme(text = element_text(size = 18)) + scale_x_continuous(guide = guide_axis(angle = 45))
 ```
 
 <div class="figure">
 
 <img src="README_files/figure-gfm/errorWHOAI-1.png" alt="Different error metrics (logMSE, MAPE, and Bias) for all methods and all possible parameter combinations of all methods. Parameters of the scenario are set to the base case values."  />
 <p class="caption">
+
 <span id="fig:errorWHOAI"></span>Figure 4: Different error metrics
 (logMSE, MAPE, and Bias) for all methods and all possible parameter
 combinations of all methods. Parameters of the scenario are set to the
@@ -583,13 +597,14 @@ ggplot(rbind(predLongs$WHO[k==3,.(Method = "WHO", MSE = mean((value-outcome)^2)/
        aes(x = startyear, y = log10(MSE), color = Method, group = Method)) + geom_point() + geom_line() +
   facet_grid(cols = vars(factor(parsimName, levels = c("Constant", "Linear trend",
                                                        "Quadratic trend", "Non-monotone")))) +
-  labs(x = "Starting year", y = "logMSE")
+  labs(x = "Starting year", y = "logMSE") + theme(text = element_text(size = 18))
 ```
 
 <div class="figure">
 
 <img src="README_files/figure-gfm/errorscenarios-1.png" alt="Mean squared errors of the investigated methods by starting year on a logarithmic scale (with k = 3 for the WHO method and tkpy = 1/7 for the AI approach) for the four defined scenarios."  />
 <p class="caption">
+
 <span id="fig:errorscenarios"></span>Figure 5: Mean squared errors of
 the investigated methods by starting year on a logarithmic scale (with k
 = 3 for the WHO method and tkpy = 1/7 for the AI approach) for the four
@@ -814,13 +829,15 @@ ggplot(RawDataYearly[Year<2020, .(Year, outcome)], aes(x = Year, y = outcome/1e6
   geom_line(data = GERpd, aes(x = Year, y = value/1e6, color = factor(param)), inherit.aes = FALSE) +
   facet_grid(factor(Type, levels = c("WHO", "AI", "Linear", "Average"))~startyear) +
   scale_color_discrete(breaks = levels(GERpd$param)) + guides(color = guide_legend(ncol = 2)) +
-  labs(y = "Predicted mortality [M/year]", color = "Parameter")
+  labs(y = "Predicted mortality [M/year]", color = "Parameter") + theme(text = element_text(size = 18)) +
+  scale_x_continuous(guide = guide_axis(angle = 45))
 ```
 
 <div class="figure">
 
 <img src="README_files/figure-gfm/germanpreds-1.png" alt="Predictions for 2020--2022 from all methods with all possible parameters, using historical German data."  />
 <p class="caption">
+
 <span id="fig:germanpreds"></span>Figure 6: Predictions for 2020–2022
 from all methods with all possible parameters, using historical German
 data.
@@ -909,8 +926,8 @@ We shall compare whether these two report identical data (Figure
 ``` r
 RawDataEurostat <- as.data.table(eurostat::get_eurostat("demo_r_mwk_ts", time_format = "raw"))
 RawDataEurostat <- RawDataEurostat[geo=="DE"&sex=="T"]
-RawDataEurostat$Year <- as.numeric(substring(RawDataEurostat$time, 1, 4))
-RawDataEurostat$Week <- as.numeric(substring(RawDataEurostat$time, 6, 7))
+RawDataEurostat$Year <- as.numeric(substring(RawDataEurostat$TIME_PERIOD, 1, 4))
+RawDataEurostat$Week <- as.numeric(substring(RawDataEurostat$TIME_PERIOD, 7, 8))
 
 RawDataSTMF <- fread("https://www.mortality.org/File/GetDocument/Public/STMF/Outputs/stmf.csv")
 RawDataSTMF <- RawDataSTMF[CountryCode=="DEUTNP"&Sex=="b"]
@@ -926,6 +943,7 @@ ggplot(RawDataEurostatSTMF, aes(x = ES, y = STMF)) + geom_point() + geom_abline(
 
 <img src="README_files/figure-gfm/datasources-1.png" alt="Weekly number of deaths according to the Eurostat (horizontal axis) and the STMF database (vertical axis) in Germany. Red line indicates the line of equality."  />
 <p class="caption">
+
 <span id="fig:datasources"></span>Figure 7: Weekly number of deaths
 according to the Eurostat (horizontal axis) and the STMF database
 (vertical axis) in Germany. Red line indicates the line of equality.
@@ -933,7 +951,7 @@ according to the Eurostat (horizontal axis) and the STMF database
 
 </div>
 
-The two are almost identical (with a correlation of 0.9999781), with
+The two are almost identical (with a correlation of 0.9999816), with
 differences only occuring for the latest data and of minimal magnitude,
 so we can safely use the Eurostat database.
 
@@ -956,6 +974,7 @@ ggplot(RawData2019, aes(x = Week, y = outcome)) + geom_line() + facet_wrap(~Year
 
 <img src="README_files/figure-gfm/yearsonpanels-1.png" alt="Weekly number of deaths in Germany, separated according to year."  />
 <p class="caption">
+
 <span id="fig:yearsonpanels"></span>Figure 8: Weekly number of deaths in
 Germany, separated according to year.
 </p>
@@ -1028,6 +1047,7 @@ ggplot(predgrid, aes(x = lubridate::as_date(NumTrend), y = exp(fit), ymin = exp(
 
 <img src="README_files/figure-gfm/longterm-1.png" alt="Fitting long-term trend as spline (black) and as quadratic trend (red); shaded area indicated 95% confidence interval. Seasonality is removed by including a single harmonic term in the regression in both cases."  />
 <p class="caption">
+
 <span id="fig:longterm"></span>Figure 9: Fitting long-term trend as
 spline (black) and as quadratic trend (red); shaded area indicated 95%
 confidence interval. Seasonality is removed by including a single
@@ -1060,6 +1080,7 @@ ggplot(RawData2019, aes(x = Week, y = outcome)) +
 
 <img src="README_files/figure-gfm/longtermfit-1.png" alt="Weekly number of deaths in Germany, separated according to year, showing the predictions from the model with quadratic long-term trend and a single, fixed harmonic term."  />
 <p class="caption">
+
 <span id="fig:longtermfit"></span>Figure 10: Weekly number of deaths in
 Germany, separated according to year, showing the predictions from the
 model with quadratic long-term trend and a single, fixed harmonic term.
@@ -1091,6 +1112,7 @@ ggplot(RawData2019, aes(x = Week, y = resid)) +  geom_line() + facet_wrap(~Year)
 
 <img src="README_files/figure-gfm/longtermfitresid-1.png" alt="Residuals of the fitted model with quadratic long-term trend and a single, fixed harmonic term. Dots indicate identified peaks."  />
 <p class="caption">
+
 <span id="fig:longtermfitresid"></span>Figure 11: Residuals of the
 fitted model with quadratic long-term trend and a single, fixed harmonic
 term. Dots indicate identified peaks.
@@ -1139,6 +1161,7 @@ ggplot(RawData2019[abs(peakdist)<100], aes(x = peakdist, y = resid)) + geom_line
 
 <img src="README_files/figure-gfm/peakneigh-1.png" alt="100-day width neighbourhood of the identified peaks. Red line indicates the best fitting rescaled Cauchy density."  />
 <p class="caption">
+
 <span id="fig:peakneigh"></span>Figure 12: 100-day width neighbourhood
 of the identified peaks. Red line indicates the best fitting rescaled
 Cauchy density.
@@ -1187,6 +1210,7 @@ ggplot(melt(peaks[, .(peakID, Summer, s, a, peakWeek, amplitude)], id.vars = c("
 
 <img src="README_files/figure-gfm/peakparamdist-1.png" alt="Distribution of the parameters of the best fitting rescaled Cauchy densities for each peak, separated according to whether the peak is during the summer."  />
 <p class="caption">
+
 <span id="fig:peakparamdist"></span>Figure 13: Distribution of the
 parameters of the best fitting rescaled Cauchy densities for each peak,
 separated according to whether the peak is during the summer.
@@ -1220,6 +1244,7 @@ ggplot(RawData2019, aes(x = Week, y = log(outcome))) + geom_line() + facet_wrap(
 
 <img src="README_files/figure-gfm/peaksremoved-1.png" alt="Weekly number of deaths in Germany, separated according to year (black) and with peaks removed (red)."  />
 <p class="caption">
+
 <span id="fig:peaksremoved"></span>Figure 14: Weekly number of deaths in
 Germany, separated according to year (black) and with peaks removed
 (red).
@@ -1283,24 +1308,24 @@ knitr::kable(data.table(
                                                         trim = TRUE)), "}$")))
 ```
 
-| Parameter                                            | Value                 |
-|:-----------------------------------------------------|:----------------------|
-| Constant term of the trend                           | $1.01\cdot 10^{+01}$  |
-| Linear term of the trend                             | $-7.36\cdot 10^{-05}$ |
-| Quadratic term of the trend                          | $3.04\cdot 10^{-09}$  |
-| Amplitude of seasonality (log scale)                 | $7.34\cdot 10^{-02}$  |
-| Phase of seasonality                                 | $-6.13\cdot 10^{-01}$ |
-| Minimum of winter peak amplitude (log scale)         | $1.06\cdot 10^{-01}$  |
-| Maximum of winter peak amplitude (log scale)         | $3.34\cdot 10^{-01}$  |
-| Minimum of winter peak width                         | $8.41\cdot 10^{+00}$  |
-| Maximum of winter peak width                         | $3.55\cdot 10^{+01}$  |
-| Probability of winter peak                           | $4.50\cdot 10^{-01}$  |
-| Minimum of summer peak amplitude (log scale)         | $9.53\cdot 10^{-02}$  |
-| Maximum of summer peak amplitude (log scale)         | $2.42\cdot 10^{-01}$  |
-| Minimum of summer peak width                         | $8.63\cdot 10^{-01}$  |
-| Maximum of summer peak width                         | $9.24\cdot 10^{+00}$  |
-| Probability of summer peak                           | $4.00\cdot 10^{-01}$  |
-| Size parameter of the negative binomial distribution | $1.00\cdot 10^{+03}$  |
+| Parameter | Value |
+|:---|:---|
+| Constant term of the trend | $1.01\cdot 10^{+01}$ |
+| Linear term of the trend | $-7.36\cdot 10^{-05}$ |
+| Quadratic term of the trend | $3.04\cdot 10^{-09}$ |
+| Amplitude of seasonality (log scale) | $7.34\cdot 10^{-02}$ |
+| Phase of seasonality | $-6.13\cdot 10^{-01}$ |
+| Minimum of winter peak amplitude (log scale) | $1.06\cdot 10^{-01}$ |
+| Maximum of winter peak amplitude (log scale) | $3.34\cdot 10^{-01}$ |
+| Minimum of winter peak width | $8.41\cdot 10^{+00}$ |
+| Maximum of winter peak width | $3.55\cdot 10^{+01}$ |
+| Probability of winter peak | $4.50\cdot 10^{-01}$ |
+| Minimum of summer peak amplitude (log scale) | $9.53\cdot 10^{-02}$ |
+| Maximum of summer peak amplitude (log scale) | $2.42\cdot 10^{-01}$ |
+| Minimum of summer peak width | $8.63\cdot 10^{-01}$ |
+| Maximum of summer peak width | $9.24\cdot 10^{+00}$ |
+| Probability of summer peak | $4.00\cdot 10^{-01}$ |
+| Size parameter of the negative binomial distribution | $1.00\cdot 10^{+03}$ |
 
 ``` r
 saveRDS(fittedpars, "fittedpars.rds")
@@ -1399,6 +1424,7 @@ egg::ggarrange(p1, p2, p3, p4, ncol = 1)
 
 <img src="README_files/figure-gfm/simillustration-1.png" alt="From top to bottom: weekly mortalities, yearly mortalities, seasonal pattern and autocorrelation function of the actual German mortality data and a single simulated dataset, 2000-2019."  />
 <p class="caption">
+
 <span id="fig:simillustration"></span>Figure 15: From top to bottom:
 weekly mortalities, yearly mortalities, seasonal pattern and
 autocorrelation function of the actual German mortality data and a
@@ -1531,6 +1557,7 @@ ggplot(merge(predLongs$WHO[startyear==2015&k==3, .(errorWHO = mean((value-outcom
 
 <img src="README_files/figure-gfm/errordirect-1.png" alt="Errors -- squared distance of the predicted outcome from its true value -- of the WHO's method and the Acosta-Irizarry method (under best parametrization) on the same simulated datasets for 200 randomly selected simulations with different scenarios; black dots indicate the base case scenario, scenario #1 to #5 represent varying the parameter shown on the panel from half of its base case value to twice (with the exception of the constant term where it is varied from 90% to 110%), and probabilities are limited to be below 100%."  />
 <p class="caption">
+
 <span id="fig:errordirect"></span>Figure 16: Errors – squared distance
 of the predicted outcome from its true value – of the WHO’s method and
 the Acosta-Irizarry method (under best parametrization) on the same
